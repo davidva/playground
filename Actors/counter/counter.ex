@@ -1,4 +1,12 @@
 defmodule Counter do
+  def start(count) do
+    spawn(__MODULE__, :loop, [count])
+  end
+
+  def next(counter) do
+    send(counter, {:next})
+  end
+
   def loop(count) do
     receive do
       {:next} ->
