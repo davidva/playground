@@ -4,13 +4,17 @@ defmodule Counter do
   end
 
   def next(counter) do
-    send(counter, {:next})
+    ref = make_ref()
+    send(counter, {:next, self(), ref})
+    receive do
+      {:ok, ^ref, count} -> count
+    end
   end
 
   def loop(count) do
     receive do
-      {:next} ->
-        IO.puts("Current count: #{count}")
+      {:next, sender, ref} ->
+        send(sender, {:ok, ref, count})
         loop(count + 1)
     end
   end
